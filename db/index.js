@@ -20,11 +20,12 @@
 const mysql = require('mysql2');
 const { v4: uuidv4 } = require('uuid'); 
 
+SQL_PASSWORD = process.env.SQL_PASSWORD;
 
 const pool = mysql.createPool({
   host: '127.0.0.1',
   user: "root",
-  password: "*wpLjE9QRcz&8G", 
+  password: SQL_PASSWORD, 
   database:  "test"
 }).promise()
 
@@ -71,7 +72,3 @@ async function deleteUser(id){
     console.err("Something went wrong when deleting User")
   }
 }
-
-// deleteUser("2d96c64e-d63d-427b-a693-2116e8fe3e1b");
-// deleteUser("40f0c877-f656-42b9-b8ff-63d41ed37296");
-// deleteUser("cda75e60-e83d-4909-851e-7a16f35bf5f0");
