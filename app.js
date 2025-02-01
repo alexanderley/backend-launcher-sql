@@ -19,14 +19,18 @@ app.use("/api", isAuthenticated, projectRouter);
 // const projectRouter = require("./routes/project.routes");
 // app.use("/api", projectRouter);
 
-// const taskRouter = require("./routes/task.routes");
-// app.use("/api", isAuthenticated, taskRouter);
-
 const taskRouter = require("./routes/task.routes");
-app.use("/api", taskRouter);
+app.use("/api", isAuthenticated, taskRouter);
+
+// const taskRouter = require("./routes/task.routes");
+// app.use("/api", taskRouter);
+
+const sqlRouter = require("./routes/sql.routes");
+app.use("/api", sqlRouter);
 
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
+
 
 require("./error-handling")(app);
 
