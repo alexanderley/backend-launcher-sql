@@ -1,13 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const {   addUser,
-    fetchUsers,
-    deleteUser,
-    createUserData} = require("../controllers/controllers")
+const { addUser, fetchUsers, deleteUser,createUserData} = require("../controllers/controllers")
 
 
 //  POST /api/tasks  -  Creates a new task
-router.post("/fetchUsers", async (req, res, next) => {
+router.get("/fetchUsers", async (req, res, next) => {
     try{ 
       const fetchedUsers = await fetchUsers();
       res.status(200).json({fetchedUsers});
