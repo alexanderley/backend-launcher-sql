@@ -3,8 +3,9 @@ const pool = require('../db/index')
 
 async function fetchUsers(){
     try{
-      const result = await pool.query('SELECT * FROM TEST.USERS')
-    console.log("result: ", result);
+      const result = await pool.query('SELECT * FROM TEST.USERS');
+      console.log('Fechted Users: ', result)
+      return result
     }
     catch(err){
       console.err("Something went wrong when fetching the users.")
@@ -21,7 +22,7 @@ async function fetchUsers(){
         'INSERT INTO TEST.USERS (ID, FIRSTNAME) VALUES (?, ?)',
         [id, firstname]
       );
-      console.log('New User:', newUser);
+      return newUser
     } catch (err) {
       console.error("Something went wrong when adding a new user to the database.", err);
     }
