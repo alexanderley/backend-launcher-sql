@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
-const pool = require('../db/index');
+const pool = require("../db/index")
+
 
 async function fetchUsers() {
   try {
@@ -13,7 +14,6 @@ async function fetchUsers() {
 
 async function addUser(firstname) {
   const id = uuidv4();
-  console.log("Generated UUID:", id);
 
   try {
     const [newUser] = await pool.query(
@@ -42,18 +42,21 @@ async function deleteUser(id) {
   }
 }
 
+
+
 async function createUserData(userId, address, phone_number) {
   const id = uuidv4();
   try {
-    const userDataExistsAlre = await pool.query(
-      'SELECT id FROM test.user_data WHERE user_id = ?',
-      [userId]
-    );
+    // const userDataExistsAlready = await pool.query(
+    //   'SELECT id FROM test.user_data WHERE user_id = ?',
+    //   [userId]
+    // );
 
-    // Check if user data already exists
-    if (userDataExistsAlre.length > 0) {
-      return { success: false, message: 'User data already exists' };
-    }
+    // console.log('User data already exists:', userDataExistsAlready);
+    // // Check if user data already exists
+    // if (userDataExistsAlready.length > 0) {
+    //   return { success: false, message: 'User data already exists' };
+    // }
 
     await pool.query(
       'INSERT INTO test.user_data (id, user_id, address, phone_number) VALUES (?, ?, ?, ?)',
@@ -64,6 +67,7 @@ async function createUserData(userId, address, phone_number) {
     console.error("Something went wrong when creating user data", err);
   }
 }
+
 
 module.exports = {
   addUser,
