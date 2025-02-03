@@ -1,9 +1,13 @@
 const express = require("express");
+const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
 const nodemailer = require("nodemailer");
 const frontend_URL = require("../frontendKey");
+ const {signUser, findUser} = require('../controllers/authControllers');
+
+const pool = require('../db/index');
 
 const { isAuthenticated } = require('./../middleware/jwt.middleware.js');
 
@@ -12,8 +16,85 @@ const saltRounds = 10;
 
 
 // POST /auth/signup  - Creates a new user in the database
+// Old mongo code
+// router.post('/signup', async(req, res, next) => {
+//   const { email, password, name } = req.body;
+
+//   // Check if email or password or name are provided as empty string 
+//   if (email === '' || password === '' || name === '') {
+//     res.status(400).json({ message: "Provide email, password and name" });
+//     return;
+//   }
+
+//   // Use regex to validate the email format
+//   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+//   if (!emailRegex.test(email)) {
+//     res.status(400).json({ message: 'Provide a valid email address.' });
+//     return;
+//   }
+  
+//   // Use regex to validate the password format
+//   const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
+//   if (!passwordRegex.test(password)) {
+//     res.status(400).json({ message: 'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.' });
+//     return;
+//   }
+
+//   try {
+//     const foundUser = await User.findOne({ email });
+  
+//     if (foundUser) {
+//       res.status(400).json({ message: "User already exists." });
+//       return;
+//     }
+  
+//     const salt = bcrypt.genSaltSync(saltRounds);
+//     console.log("Salt: ", salt);
+//     const hashedPassword = bcrypt.hashSync(password, salt);
+
+//     const verificationToken = jwt.sign({ email }, process.env.TOKEN_SECRET, {
+//       expiresIn: "1d",
+//     });
+
+//     const createdUser = await User.create({ email, password: hashedPassword, name, verificationToken });
+
+//     // ### Nodemailer implementation
+//     // password from the email server
+//     // const EMAIL_PASSWORD = process.env.EMAIL_SECRET;
+
+//     // const transporter = nodemailer.createTransport({
+//     //   service: "Gmail",
+//     //   auth: {
+//     //     user: "alexander.ley.inbox@gmail.com",
+//     //     pass: EMAIL_PASSWORD,
+//     //   },
+//     // });
+
+//     // // url that is goin to be send to the user in order to verify their email
+//     // const verificationLink = `${frontend_URL}/verify/?token=${verificationToken}`;
+//     // const msg = {
+//     //   from: '"The Express app 👻" <foo@example.com>',
+//     //   to: `${email}`,
+//     //   subject: "Account Verification",
+//     //   text: `Click the following link to verify your account: ${verificationLink}`,
+//     // };
+
+//     // await transporter.sendMail(msg);
+  
+//     // const { email: createdEmail, name: createdName, _id: createdId } = createdUser;
+//     // const user = { email: createdEmail, name: createdName, _id: createdId,  };
+  
+//     res.status(201).json({ createdUser });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
+
+// New SQl Code
 router.post('/signup', async(req, res, next) => {
   const { email, password, name } = req.body;
+  console.log("User data: ", name.length);
 
   // Check if email or password or name are provided as empty string 
   if (email === '' || password === '' || name === '') {
@@ -36,9 +117,9 @@ router.post('/signup', async(req, res, next) => {
   }
 
   try {
-    const foundUser = await User.findOne({ email });
-  
-    if (foundUser) {
+    const foundUser = await findUser(email)
+
+    if (foundUser.length > 0) {
       res.status(400).json({ message: "User already exists." });
       return;
     }
@@ -51,34 +132,9 @@ router.post('/signup', async(req, res, next) => {
       expiresIn: "1d",
     });
 
-    const createdUser = await User.create({ email, password: hashedPassword, name, verificationToken });
+    const id = uuidv4();
+    const createdUser = await signUser(id, email, hashedPassword, name, verificationToken);
 
-    // ### Nodemailer implementation
-    // password from the email server
-    // const EMAIL_PASSWORD = process.env.EMAIL_SECRET;
-
-    // const transporter = nodemailer.createTransport({
-    //   service: "Gmail",
-    //   auth: {
-    //     user: "alexander.ley.inbox@gmail.com",
-    //     pass: EMAIL_PASSWORD,
-    //   },
-    // });
-
-    // // url that is goin to be send to the user in order to verify their email
-    // const verificationLink = `${frontend_URL}/verify/?token=${verificationToken}`;
-    // const msg = {
-    //   from: '"The Express app 👻" <foo@example.com>',
-    //   to: `${email}`,
-    //   subject: "Account Verification",
-    //   text: `Click the following link to verify your account: ${verificationLink}`,
-    // };
-
-    // await transporter.sendMail(msg);
-  
-    // const { email: createdEmail, name: createdName, _id: createdId } = createdUser;
-    // const user = { email: createdEmail, name: createdName, _id: createdId,  };
-  
     res.status(201).json({ createdUser });
   } catch (err) {
     console.log(err);
