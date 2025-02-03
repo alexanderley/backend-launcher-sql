@@ -7,7 +7,8 @@ async function findUser(email) {
             'SELECT * FROM USERS WHERE email = ?',
             [email]
         );
-        return user;
+        // Return the first user found, because there should only be one user with that email
+        return user[0];
     } catch (err) {
         console.error("Something went wrong when fetching the users.", err);
     }
