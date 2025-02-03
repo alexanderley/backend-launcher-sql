@@ -1,12 +1,10 @@
 const express = require("express");
-const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
  const {signUser, findUser} = require('../controllers/authControllers');
 
-const pool = require("../db/index");
 const { addUserData, findUserData } = require("../controllers/userController");
-const { fetchUsers } = require("../controllers/controllers");
+
 
 const router = express.Router();
 const saltRounds = 10;
@@ -34,11 +32,7 @@ router.post('/addUserData', async(req, res, next) => {
 router.post('/findUserData', async(req, res, next) => {
   const {userDataId} = req.body;
 
-  // console.log("User Id: ", userId); 
-
   try{
-    // const fechtedUsers = await fetchUsers();
-
     const foundUserData = await findUserData(userDataId);
     console.log('foundUserData:', foundUserData); 
     if(!findUserData){
