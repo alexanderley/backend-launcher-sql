@@ -2,14 +2,7 @@ const express = require("express");
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const User = require("../models/User.model");
-const nodemailer = require("nodemailer");
-const frontend_URL = require("../frontendKey");
  const {signUser, findUser} = require('../controllers/authControllers');
-
-const pool = require('../db/index');
-
-const { isAuthenticated } = require('./../middleware/jwt.middleware.js');
 
 const router = express.Router();
 const saltRounds = 10;
@@ -42,8 +35,8 @@ router.post('/signup', async(req, res, next) => {
   }
 
   try {
-    const foundUser = await findUser(email)
-    if (foundUser.length > 0) {
+    const foundUser = await findUser(email);
+    if (foundUser) {
       res.status(400).json({ message: "User already exists." });
       return;
     }
@@ -55,8 +48,8 @@ router.post('/signup', async(req, res, next) => {
       expiresIn: "1d",
     });
 
-    const id = uuidv4();
-    const createdUser = await signUser(id, email, hashedPassword, name, verificationToken);
+    // const id = uuidv4();
+    const createdUser = await signUser(email, hashedPassword, name, verificationToken);
 
     res.status(201).json({ createdUser });
   } catch (err) {
@@ -76,7 +69,6 @@ router.post('/login', async (req, res, next) => {
   }
     try{
       const foundUser = await findUser(email)
-      console.log("foundUser: ", foundUser);
 
       if(!foundUser){
         res.status(401).json({ message: "User not found." })
@@ -93,7 +85,6 @@ router.post('/login', async (req, res, next) => {
          // Create an object that will be set as the token payload
          const payload = { id, email, name };
 
- 
          // Create and sign the token
          const authToken = jwt.sign( 
            payload,

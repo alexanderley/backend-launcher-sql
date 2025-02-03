@@ -14,9 +14,10 @@ async function findUser(email) {
     }
 }
 
-async function signUser(id, email, hashedPassword, name, verificationToken) {
+async function signUser(email, hashedPassword, name, verificationToken) {
+    const id = uuidv4()
 
-    if(!id || !email || !hashedPassword || !name || !verificationToken) {
+    if(!email || !hashedPassword || !name || !verificationToken) {
         throw new Error('Missing required fields');
     }
 
