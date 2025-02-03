@@ -5,22 +5,52 @@ const jwt = require("jsonwebtoken");
  const {signUser, findUser} = require('../controllers/authControllers');
 
 const pool = require("../db/index");
+const { addUserData, findUserData } = require("../controllers/userController");
+const { fetchUsers } = require("../controllers/controllers");
 
 const router = express.Router();
 const saltRounds = 10;
 
-router.post('/test', async(req, res, next) => {
-  const id = uuidv4()
-  try{
-    const [result] = await pool.query("INSERT INTO test.user_data (id, user_id, address, phone_number, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())",
-  [id, '0d7c43ed-a6f2-434b-9be6-8b7771164cba', '1234 Main St', '123-456-7890']);
 
-    console.log('Result:!!!!!!!!!!!', result);
+// #Todo create sperate user route
+router.post('/addUserData', async(req, res, next) => {
+  const {userId, address, phoneNumber} = req.body;
+
+  if(!userId || !address || !phoneNumber){
+    return res.status(404).json({message: "Provide userId, address and phoneNumber"})
+  }
+
+  try{
+  addUserData(userId, address, phoneNumber);
+
     res.status(201).json({ message: "User data created" });
   
   }catch(err){
     console.log(err)
     res.status(500).json({ message: "Internal Server Error" });
+  } 
+})
+
+router.post('/findUserData', async(req, res, next) => {
+  const {userDataId} = req.body;
+
+  // console.log("User Id: ", userId); 
+
+  try{
+    // const fechtedUsers = await fetchUsers();
+
+    const foundUserData = await findUserData(userDataId);
+    console.log('foundUserData:', foundUserData); 
+    if(!findUserData){
+      res.status(404).json({message: "User data not found"})
+    }
+
+
+    res.status(200).json({foundUserData});
+  
+  }catch(err){
+   console.error(err)
+   res.status(500).json({ message: "Internal Server Error" });
   } 
 })
 
