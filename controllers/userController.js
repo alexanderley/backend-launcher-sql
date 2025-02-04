@@ -19,7 +19,6 @@ async function addUserData (userId, address, phoneNumber) {
 }
 
 async function findUserData(userDataId){
-    console.log('userDataId:', userDataId);
     if(!userDataId){
         throw new Error('userDataId is required to find user data');
     }

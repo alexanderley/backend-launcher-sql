@@ -47,17 +47,6 @@ async function deleteUser(id) {
 async function createUserData(userId, address, phone_number) {
   const id = uuidv4();
   try {
-    // const userDataExistsAlready = await pool.query(
-    //   'SELECT id FROM test.user_data WHERE user_id = ?',
-    //   [userId]
-    // );
-
-    // console.log('User data already exists:', userDataExistsAlready);
-    // // Check if user data already exists
-    // if (userDataExistsAlready.length > 0) {
-    //   return { success: false, message: 'User data already exists' };
-    // }
-
     await pool.query(
       'INSERT INTO test.user_data (id, user_id, address, phone_number) VALUES (?, ?, ?, ?)',
       [id, userId, address, phone_number]
