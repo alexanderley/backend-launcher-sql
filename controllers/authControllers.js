@@ -3,14 +3,15 @@ const pool = require('../db/index');
 
 async function findUser(email) {
     try {
-        const user = await pool.query(
+        const [rows] = await pool.query(
             'SELECT * FROM USERS WHERE email = ?',
             [email]
         );
-        // Return the first user found, because there should only be one user with that email
-        return user;
+        // Return the first user (or null if no user is found)
+        return rows.length > 0 ? rows[0] : null;
     } catch (err) {
         console.error("Something went wrong when fetching the users.", err);
+        return null;
     }
 }
 

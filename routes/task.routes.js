@@ -2,9 +2,6 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-const Task = require("../models/Task.model");
-const Project = require("../models/Project.model");
-
 //  POST /api/tasks  -  Creates a new task
 router.post("/tasks", async (req, res, next) => {
   const { title, description, projectId } = req.body;

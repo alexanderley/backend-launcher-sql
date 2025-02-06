@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-const Project = require("../models/Project.model");
-const Task = require("../models/Task.model");
+
 
 
 router.post("/projects", async (req, res, next)=>{

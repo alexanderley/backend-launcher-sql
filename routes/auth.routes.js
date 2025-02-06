@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
  const {signUser, findUser} = require('../controllers/authControllers');
 
 const { addUserData, findUserData } = require("../controllers/userController");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 
 const router = express.Router();
@@ -75,6 +76,7 @@ router.post('/signup', async(req, res, next) => {
 
   try {
     const foundUser = await findUser(email);
+     console.log('foundUser:', foundUser);
     if (foundUser) {
       res.status(400).json({ message: "User already exists." });
       return;
@@ -100,6 +102,8 @@ router.post('/signup', async(req, res, next) => {
 // POST  /auth/login - Verifies email and password and returns a JWT
 router.post('/login', async (req, res, next) => {
   const { email, password } = req.body;
+
+  console.log('LOGIN!!!!!!!!', email, password);
 
   // Check if email or password are provided as empty string 
   if (email === '' || password === '') {
@@ -146,6 +150,17 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
+// Old noSQl war
+router.get('/verify', isAuthenticated, (req, res, next) => {
+
+  // If JWT token is valid the payload gets decoded by the
+  // isAuthenticated middleware and made available on `req.payload`
+  console.log(`req.payload`, req.payload);
+
+  // Send back the object with user data
+  // previously set as the token payload
+  res.status(200).json(req.payload);
+});
 
 
 module.exports = router;
