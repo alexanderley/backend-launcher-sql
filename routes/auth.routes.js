@@ -114,10 +114,10 @@ router.post('/login', async (req, res, next) => {
       const foundUser = await findUser(email)
 
       if(!foundUser){
-        res.status(401).json({ message: "User not found." })
+        res.status(404).json({ message: "User does not exist yet." })
         return;  
       }
-   
+
       // passwort check
       const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
       console.log("Password correct: ", passwordCorrect);
