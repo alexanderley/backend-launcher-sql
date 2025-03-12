@@ -120,7 +120,7 @@ router.post('/login', async (req, res, next) => {
 
       // passwort check
       const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
-      console.log("Password correct: ", passwordCorrect);
+      // console.log("Password correct: ", passwordCorrect);
       if(passwordCorrect){
          // Deconstruct the user object to omit the password
          const { id, email, name } = foundUser;
@@ -135,7 +135,7 @@ router.post('/login', async (req, res, next) => {
            { algorithm: 'HS256', expiresIn: "6h" }
          );
  
-        console.log('Autho token: ', authToken);
+        // console.log('Autho token: ', authToken);
          // Send the token as the response
          res.status(200).json({ authToken: authToken });
          return

@@ -12,6 +12,9 @@ require("./config")(app);
 const allRoutes = require("./routes");
 app.use("/api", allRoutes);
 
+const videoRouter = require("./routes/video.routes");
+app.use("/api", videoRouter);
+
 const sqlRouter = require("./routes/sql.routes");
 app.use("/api", sqlRouter);
 
@@ -20,6 +23,8 @@ app.use("/api", isAuthenticated, projectRouter);
 
 const taskRouter = require("./routes/task.routes");
 app.use("/api", isAuthenticated, taskRouter);
+
+
 
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
